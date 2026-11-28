@@ -1,0 +1,17 @@
+FROM golang:1.27.4-alpine3.23 AS build
+
+WORKDIR /usr/src/app
+
+COPY code/example-backend  .
+
+RUN go build
+
+FROM scratch AS production
+
+EXPOSE 8080
+
+COPY --from=build /usr/src/app/server /server
+
+ENV REQUEST_ORIGIN=http://localhost:5001
+
+ENTRYPOINT ["./server"]
